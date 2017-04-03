@@ -15,15 +15,17 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
+import static org.powermock.api.mockito.PowerMockito.spy;
 
 /**
  * Created by Piotrek on 03.04.2017.
  */
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ConfigurationLoader.class, NewsReaderFactory.class})
+@PrepareForTest({ConfigurationLoader.class, NewsReaderFactory.class, PublishableNews.class})
 public class NewsLoaderTest {
 
     private WebServiceNewsReader webServiceNewsReader;
+    private PublishableNews spyPublishableNews;
 
     @Before
     public void setUp(){
@@ -39,6 +41,10 @@ public class NewsLoaderTest {
         mockStatic(NewsReaderFactory.class);
         NewsReaderFactory newsReaderFactory = Mockito.mock(NewsReaderFactory.class);
         Mockito.when(newsReaderFactory.getReader(configuration.getReaderType())).thenReturn(webServiceNewsReader);
+
+        mockStatic(PublishableNews.class);
+        spyPublishableNews = spy(new PublishableNews());
+        Mockito.when(PublishableNews.create()).thenReturn(spyPublishableNews);
     }
 
     @Test
@@ -47,8 +53,8 @@ public class NewsLoaderTest {
         incomingNews.add(new IncomingInfo("test test test", SubsciptionType.NONE));
         Mockito.when(webServiceNewsReader.read()).thenReturn(incomingNews);
         NewsLoader newsLoader = new NewsLoader();
-        PublishableNews publishableNews = newsLoader.loadNews();
-        List<String> result = (List<String>) Whitebox.getInternalState(publishableNews, "publicContent");
+        spyPublishableNews = newsLoader.loadNews();
+        List<String> result = (List<String>) Whitebox.getInternalState(spyPublishableNews, "publicContent");
         assertThat(result.size(), is(equalTo(1)));
         assertThat(result.get(0), is(equalTo("test test test")));
     }
