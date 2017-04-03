@@ -6,9 +6,6 @@ public class ConfigurationException extends RuntimeException {
 		super(e);
 	}
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 
 }
