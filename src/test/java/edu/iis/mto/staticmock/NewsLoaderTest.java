@@ -77,6 +77,5 @@ public class NewsLoaderTest {
         NewsLoader newsLoader = new NewsLoader();
         spyPublishableNews = newsLoader.loadNews();
         Mockito.verify(spyPublishableNews, Mockito.times(1)).addForSubscription("test test test", SubsciptionType.A);
-
     }
 }
